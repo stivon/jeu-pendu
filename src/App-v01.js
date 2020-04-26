@@ -42,16 +42,13 @@ class App extends Component {
   }
 
   getFeedbackForLetter(letter) {
-    const { lettersAlphabet, letterClicked } = this.state
-    console.log('letterClicked', letterClicked)
+    const { letterClicked } = this.state
     const indexLetterMatched = letterClicked.includes(letter)
-    console.log('indexLetterMatched', indexLetterMatched)
     return indexLetterMatched ? 'alreadyClicked' : ''
   }
 
   // Arrow fx for binding
   handleLetterClick = (letter) => {
-    console.log('%c handleLetterClick =>', 'color: blue;', letter)
     const { letterClicked, matchedCardIndices } = this.state
 
     if (letterClicked.includes(letter)) {
@@ -109,9 +106,9 @@ class App extends Component {
   }
 }
 
-const HIDDEN_SYMBOL = '❓'
+const HIDDEN_SYMBOL = '__'
 
-const Card = ({ card, feedback, index }) => (
+const Card = ({ card, feedback }) => (
   <div className={`card ${feedback}`}>
     <span className="symbol">
       {feedback === 'hidden' ? HIDDEN_SYMBOL : card}
@@ -119,7 +116,7 @@ const Card = ({ card, feedback, index }) => (
   </div>
 )
 
-const Letter = ({ letter, feedback, index, onClick }) => (
+const Letter = ({ letter, feedback, onClick }) => (
   <div className={`letter ${feedback}`} onClick={() => onClick(letter)}>
     <span className="symbol">{letter}</span>
   </div>
