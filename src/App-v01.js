@@ -43,12 +43,15 @@ class App extends Component {
 
   getFeedbackForLetter(letter) {
     const { lettersAlphabet, letterClicked } = this.state
+    console.log('letterClicked', letterClicked)
     const indexLetterMatched = letterClicked.includes(letter)
+    console.log('indexLetterMatched', indexLetterMatched)
     return indexLetterMatched ? 'alreadyClicked' : ''
   }
 
   // Arrow fx for binding
   handleLetterClick = (letter) => {
+    console.log('%c handleLetterClick =>', 'color: blue;', letter)
     const { letterClicked, matchedCardIndices } = this.state
 
     if (letterClicked.includes(letter)) {
@@ -100,9 +103,7 @@ class App extends Component {
             ))}
           </span>
         </div>
-        <div className="App-win">
-          {won && <span className="text">Gagné !</span>}
-        </div>
+        <div className="App-win">{won && <span>Gagné</span>}</div>
       </div>
     )
   }
