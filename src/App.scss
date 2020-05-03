@@ -1,0 +1,51 @@
+.Hangman {
+  text-align: center;
+
+  &-Block {
+    &-Card {
+      display: flex;
+      flex-wrap: wrap;
+      width: 500px;
+      margin: auto;
+      user-select: none;
+    }
+
+    &__Letter {
+      width: 80%;
+
+      .card {
+        flex: 1 1 calc(100% / 13 - 0.4em);
+      }
+    }
+  }
+}
+
+.card {
+  font-size: 2em;
+  flex: 1 1 calc(100% / 10 - 0.4em);
+  outline: 0.08em solid silver;
+  margin: 0.2em;
+  display: flex;
+  cursor: pointer;
+  background: silver;
+
+  &.visible {
+    color: green;
+  }
+
+  &.clicked {
+    text-decoration: line-through;
+    color: #b1a9a9;
+  }
+
+  .symbol {
+    margin: auto;
+  }
+}
+
+.textWin {
+  margin: 10px auto;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: green;
+}

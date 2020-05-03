@@ -1,21 +1,11 @@
 import React, { Component } from 'react'
-import './App.css'
+import words from './words'
+import { randomWord, lengthWord } from './word'
+import './App.scss'
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-const LISTWORDS = [
-  'JAVASCRIPT',
-  'IPHONE',
-  'SAMSUNG',
-  'IOS',
-  'NAVIGATEUR',
-  'ORDINATEUR',
-  'UNITAIRE',
-  'CLAVIER',
-  'LANGAGE',
-  'SCRIPT',
-]
-
-const VISUAL_PAUSE_MSECS = 750
+const WORD = randomWord(words)
+const WORDLENGTH = lengthWord(WORD)
 
 class App extends Component {
   constructor(props) {
@@ -23,85 +13,72 @@ class App extends Component {
 
     this.state = {
       lettersAlphabet: ALPHABET,
-      cards: this.generateCards(),
+      cards: WORD,
+      cardsLength: WORDLENGTH.length,
       letterClicked: [],
       matchedCardIndices: [],
     }
   }
 
-  generateCards() {
-    const randomItem = LISTWORDS[Math.floor(Math.random() * LISTWORDS.length)]
-    return randomItem.split('')
-  }
-
-  //Affiche la bonne classe
-  getFeedbackForCard(index) {
-    const { matchedCardIndices, cards } = this.state
-    const indexCardMatched = matchedCardIndices.includes(cards[index])
-    return indexCardMatched ? 'visible' : 'hidden'
-  }
-
-  getFeedbackForLetter(index) {
-    const { lettersAlphabet, letterClicked } = this.state
-    const indexLetterMatched = letterClicked.includes(lettersAlphabet[index])
-    return indexLetterMatched ? 'alreadyClicked' : ''
-  }
-
   // Arrow fx for binding
-  handleLetterClick = (index) => {
-    const { letterClicked, lettersAlphabet } = this.state
+  handleLetterClick = (letter) => {
+    const { letterClicked, cards, matchedCardIndices } = this.state
+    console.log('handleLetterClick')
 
-    if (letterClicked.includes(lettersAlphabet[index])) {
+    if (letterClicked.includes(letter)) {
       return
     }
 
-    this.setState({ letterClicked: [...letterClicked, lettersAlphabet[index]] })
+    this.setState({ letterClicked: [...letterClicked, letter] })
 
-    this.handleMatchedLetter(index)
-  }
-
-  handleMatchedLetter(index) {
-    const { cards, lettersAlphabet, matchedCardIndices } = this.state
-    const cardMatched = cards.includes(lettersAlphabet[index])
+    const cardMatched = cards.includes(letter)
     if (cardMatched) {
       this.setState({
-        matchedCardIndices: [...matchedCardIndices, lettersAlphabet[index]],
+        matchedCardIndices: [...matchedCardIndices, letter],
       })
     }
   }
 
   render() {
-    const { cards, lettersAlphabet, matchedCardIndices } = this.state
-    const won = matchedCardIndices.length === cards.length
+    const {
+      cards,
+      lettersAlphabet,
+      matchedCardIndices,
+      letterClicked,
+      cardsLength,
+    } = this.state
+    const won = matchedCardIndices.length === cardsLength
     return (
-      <div className="App-game">
-        <div className="App-hangman">
-          <span className="App-hangman-game">
-            {cards.map((card, index) => (
+      <div className="Hangman">
+        <h1>Jeux du Pendu</h1>
+        <h2>Développé par Steven Lassausse</h2>
+        <div className="Hangman-Block">
+          <div className="Hangman-Block-Card">
+            {cards.map((letter, index) => (
               <Card
-                card={card}
+                letter={letter}
                 key={index}
-                index={index}
-                feedback={this.getFeedbackForCard(index)}
+                matchedCardIndices={matchedCardIndices}
               />
             ))}
-          </span>
+          </div>
         </div>
-        <div className="App-alphabet">
-          <span className="App-alphabet-letter">
+        <div className="Hangman-Block">
+          <div className="Hangman-Block-Card Hangman-Block__Letter">
             {lettersAlphabet.map((letter, index) => (
               <Letter
                 letter={letter}
+                letterClicked={letterClicked}
                 key={index}
-                index={index}
-                feedback={this.getFeedbackForLetter(index)}
                 onClick={this.handleLetterClick}
               />
             ))}
-          </span>
+          </div>
         </div>
-        <div className="App-win">
-          {won && <span className="text">Gagné !</span>}
+        <div className="Hangman-Block">
+          <div className="Hangman-Block-Card Hangman-Block-Win">
+            {won && <span className="textWin">Gagné !</span>}
+          </div>
         </div>
       </div>
     )
@@ -110,18 +87,27 @@ class App extends Component {
 
 const HIDDEN_SYMBOL = '__'
 
-const Card = ({ card, feedback }) => (
-  <div className={`card ${feedback}`}>
-    <span className="symbol">
-      {feedback === 'hidden' ? HIDDEN_SYMBOL : card}
-    </span>
-  </div>
-)
+const Card = ({ letter, matchedCardIndices }) => {
+  const matched = matchedCardIndices.includes(letter)
 
-const Letter = ({ letter, feedback, index, onClick }) => (
-  <div className={`letter ${feedback}`} onClick={() => onClick(index)}>
-    <span className="symbol">{letter}</span>
-  </div>
-)
+  return (
+    <div className={`card ${matched ? 'visible' : ''}`}>
+      <span className="symbol">{matched ? letter : HIDDEN_SYMBOL}</span>
+    </div>
+  )
+}
+
+const Letter = ({ letter, letterClicked, onClick }) => {
+  const matched = letterClicked.includes(letter)
+
+  return (
+    <div
+      className={`card ${matched ? 'clicked' : ''}`}
+      onClick={() => onClick(letter)}
+    >
+      <span className="symbol">{letter}</span>
+    </div>
+  )
+}
 
 export default App
