@@ -4,8 +4,17 @@ import { randomWord, lengthWord } from './word'
 import './App.scss'
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-const WORD = randomWord(words)
-const WORDLENGTH = lengthWord(WORD)
+let Word = randomWord(words)
+let WordLength = lengthWord(Word)
+
+const DEFAULT_STATE = {
+  lettersAlphabet: ALPHABET,
+  cards: Word,
+  cardsLength: WordLength.length,
+  letterClicked: [],
+  matchedCardIndices: [],
+  numberLimit: WordLength.length + 3,
+}
 
 class App extends Component {
   constructor(props) {
@@ -13,10 +22,11 @@ class App extends Component {
 
     this.state = {
       lettersAlphabet: ALPHABET,
-      cards: WORD,
-      cardsLength: WORDLENGTH.length,
+      cards: Word,
+      cardsLength: WordLength.length,
       letterClicked: [],
       matchedCardIndices: [],
+      numberLimit: WordLength.length + 3,
     }
   }
 
@@ -36,7 +46,24 @@ class App extends Component {
       this.setState({
         matchedCardIndices: [...matchedCardIndices, letter],
       })
+    } else {
+      this.setState((prevState) => ({
+        numberLimit: prevState.numberLimit - 1,
+      }))
     }
+  }
+
+  handleNewGame = () => {
+    let Word = randomWord(words)
+    let WordLength = lengthWord(Word)
+    this.setState({
+      lettersAlphabet: ALPHABET,
+      cards: Word,
+      cardsLength: WordLength.length,
+      letterClicked: [],
+      matchedCardIndices: [],
+      numberLimit: WordLength.length + 3,
+    })
   }
 
   render() {
@@ -46,7 +73,9 @@ class App extends Component {
       matchedCardIndices,
       letterClicked,
       cardsLength,
+      numberLimit,
     } = this.state
+
     const won = matchedCardIndices.length === cardsLength
     return (
       <div className="Hangman">
@@ -64,20 +93,44 @@ class App extends Component {
           </div>
         </div>
         <div className="Hangman-Block">
+          <div className="Hangman-Block-Card Hangman-Block-Remaining">
+            <span className="textRemaining">
+              Nombre d'essais restants : {numberLimit}
+            </span>
+          </div>
+        </div>
+        <div className="Hangman-Block">
           <div className="Hangman-Block-Card Hangman-Block__Letter">
-            {lettersAlphabet.map((letter, index) => (
-              <Letter
-                letter={letter}
-                letterClicked={letterClicked}
-                key={index}
-                onClick={this.handleLetterClick}
-              />
-            ))}
+            {!won ? (
+              lettersAlphabet.map((letter, index) => (
+                <Letter
+                  letter={letter}
+                  letterClicked={letterClicked}
+                  key={index}
+                  onClick={this.handleLetterClick}
+                />
+              ))
+            ) : (
+              <span className="newGame" onClick={this.handleNewGame}>
+                Nouvelle partie
+              </span>
+            )}
           </div>
         </div>
         <div className="Hangman-Block">
           <div className="Hangman-Block-Card Hangman-Block-Win">
-            {won && <span className="textWin">Gagné !</span>}
+            {won ? (
+              <span className="textWin">Gagné !</span>
+            ) : numberLimit === 0 ? (
+              <div>
+                <span className="textLoose">Perdu !</span>
+                <span className="newGame" onClick={this.handleNewGame}>
+                  Nouvelle partie
+                </span>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </div>
